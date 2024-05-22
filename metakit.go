@@ -39,14 +39,14 @@ func (m *Metadata) SortParams(sort string) {
 }
 
 // SetPage function sets Page value as a 1 by default, if its equals to 0
-func (m *Metadata) SetPage() {
+func (m *Metadata) setPage() {
 	if m.Page == 0 {
 		m.Page = 1
 	}
 }
 
 // SetPageSize function handle PageSize, first it's set default value 10. If page size is greater than 100, then it sets 100
-func (m *Metadata) SetPageSize() {
+func (m *Metadata) setPageSize() {
 	switch {
 	case m.PageSize > 100:
 		m.PageSize = 100
@@ -56,10 +56,11 @@ func (m *Metadata) SetPageSize() {
 }
 
 // Paginate is GORM scope function. Paginate calculates the total pages and offset based on current metadata and applies pagination to the Gorm query
+// Paginate function cares Page and PageSize automatically, you can use your own function to replace it, it just overwrite fields
 func Paginate(m *Metadata) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
-		m.SetPage()
-		m.SetPage()
+		m.setPage()
+		m.setPageSize()
 
 		// Calculate total pages based on total rows and page size
 		totalPages := int(math.Ceil(float64(m.TotalRows) / float64(m.PageSize)))
@@ -78,7 +79,7 @@ func Paginate(m *Metadata) func(db *gorm.DB) *gorm.DB {
 // Parameters:
 //
 //	-Pointer of http.Request
-//	-field to delete from query
+//	-Second parameter is string type to delete field from query
 //
 // Returns:
 //
