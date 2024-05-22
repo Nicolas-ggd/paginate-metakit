@@ -19,10 +19,10 @@ The Metadata structure holds the pagination and sorting parameters:
 
 ```go
 type Metadata struct {
-    Page          int    `json:"page"`
-    PageSize      int    `json:"page_size"`
-    Sort          string `json:"sort"`
-    SortDirection string `json:"sort_direction"`
+    Page          int    `form:"page" json:"page"`
+    PageSize      int    `form:"page_size" json:"page_size"`
+    Sort          string `form:"sort" json:"sort"`
+    SortDirection string `form:"sort_direction" json:"sort_direction"`
     TotalRows     int64  `json:"total_rows"`
     TotalPages    int64  `json:"total_pages"`
 }
