@@ -7,16 +7,16 @@ import (
 
 type Metadata struct {
 	// Page represents current page
-	Page int `json:"page"`
+	Page int `form:"page" json:"page"`
 
 	// PageSize is capacity of per page items
-	PageSize int `json:"page_size"`
+	PageSize int `form:"page_size" json:"page_size"`
 
 	// Sort is string type which defines the sort type of data
-	Sort string `json:"sort"`
+	Sort string `form:"sort" json:"sort"`
 
 	// SortDirection defines sorted column name
-	SortDirection string `json:"sort_direction"`
+	SortDirection string `form:"sort_direction" json:"sort_direction"`
 
 	// TotalRows defines the quantity of total rows
 	TotalRows int64 `json:"total_rows"`
