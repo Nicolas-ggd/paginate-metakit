@@ -57,6 +57,8 @@ func (m *Metadata) SetPageSize() {
 // Paginate is GORM scope function. Paginate calculates the total pages and offset based on current metadata and applies pagination to the Gorm query
 func Paginate(m *Metadata) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
+		m.SetPage()
+		m.SetPage()
 
 		// Calculate total pages based on total rows and page size
 		totalPages := int(math.Ceil(float64(m.TotalRows) / float64(m.PageSize)))
