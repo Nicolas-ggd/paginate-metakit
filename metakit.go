@@ -3,7 +3,6 @@ package metakit
 import (
 	"gorm.io/gorm"
 	"math"
-	"net/http"
 )
 
 type Metadata struct {
@@ -72,31 +71,4 @@ func Paginate(m *Metadata) func(db *gorm.DB) *gorm.DB {
 		// Apply offset and limit to the Gorm query
 		return db.Offset(offset).Limit(m.PageSize)
 	}
-}
-
-// GetFilterableFields function iterates through query parameters and removes those that are not needed
-//
-// Parameters:
-//
-//	-Pointer of http.Request
-//	-Second parameter is string type to delete field from query
-//
-// Returns:
-//
-//	-map[string][]strings
-func GetFilterableFields(r *http.Request, q string) map[string][]string {
-	// Parse the URL query parameters into a map
-	query := r.URL.Query()
-
-	// Loop through all query parameters
-	for field := range query {
-		// Remove the current field from the query
-		query.Del(field)
-	}
-
-	// Remove the q parameter specifically
-	query.Del(q)
-
-	// Return the modified query parameters as a map
-	return query
 }

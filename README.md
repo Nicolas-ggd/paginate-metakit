@@ -4,7 +4,6 @@ Gorm-Metakit is a Go package designed to simplify pagination and sorting functio
 ## Overview
 - Pagination: Easily handle pagination with customizable page size.
 - Default Settings: Provides sensible defaults for page, page size, and sort direction.
-- Filtering: Remove unnecessary query parameters from URL queries.
 
 ## Installation
 To install the package, use go get:
@@ -60,35 +59,6 @@ func main() {
 		db.Scopes(metakit.Paginate(&metadata)).Find(&results)
 		
 	})
-}
-
-```
-
-## Example Usage of GetFilterableFields Function
-The GetFilterableFields function helps in filtering out unnecessary query parameters.
-```go
-package main
-
-import (
-	"fmt"
-	"net/http"
-	"net/url"
-	"github.com/Nicolas-ggd/gorm-metakit"
-)
-
-func main() {
-	// Sample URL with query parameters
-	rawURL := "http://example.com/items?page=1&page_size=20&sort=name&q=searchTerm"
-	parsedURL, _ := url.Parse(rawURL)
-	request := &http.Request{URL: parsedURL}
-
-	// Filter query parameters
-	filteredParams := metakit.GetFilterableFields(request, "q")
-
-	// Print filtered query parameters
-	for key, value := range filteredParams {
-		fmt.Printf("%s: %v\n", key, value)
-	}
 }
 
 ```
