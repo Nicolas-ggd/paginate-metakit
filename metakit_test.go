@@ -3,7 +3,6 @@ package metakit
 import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"math"
 	"testing"
 )
 
@@ -57,9 +56,17 @@ func TestPaginate(t *testing.T) {
 		test.metadata.setPage()
 		test.metadata.setPageSize()
 
-		totalPages := int(math.Ceil(float64(test.metadata.TotalRows) / float64(test.metadata.PageSize)))
-		if test.metadata.TotalPages != int64(totalPages) {
+		totalPages := (test.metadata.TotalRows + int64(test.metadata.PageSize) - 1) / int64(test.metadata.PageSize)
+		if test.metadata.TotalPages != totalPages {
 			t.Errorf("expected %v total pages, got %v", totalPages, test.metadata.TotalPages)
+		}
+
+		if test.metadata.Page != test.expectedPage {
+			t.Errorf("expected page %v, got %v", test.expectedPage, test.metadata.Page)
+		}
+
+		if test.metadata.PageSize != test.expectedSize {
+			t.Errorf("expected page size %v, got %v", test.expectedSize, test.metadata.PageSize)
 		}
 
 		offset := (test.metadata.Page - 1) * test.metadata.PageSize
