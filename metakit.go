@@ -2,7 +2,6 @@ package metakit
 
 import (
 	"gorm.io/gorm"
-	"math"
 )
 
 type Metadata struct {
@@ -61,9 +60,13 @@ func Paginate(m *Metadata) func(db *gorm.DB) *gorm.DB {
 		m.setPage()
 		m.setPageSize()
 
-		// Calculate total pages based on total rows and page size
-		totalPages := int(math.Ceil(float64(m.TotalRows) / float64(m.PageSize)))
-		m.TotalPages = int64(totalPages)
+		// Use integer arithmetic to avoid possible unsafe checking
+		if m.PageSize > 0 {
+			totalPages := (m.TotalRows + int64(m.PageSize) - 1) / int64(m.PageSize)
+			m.TotalPages = totalPages
+		} else {
+			m.TotalPages = 1
+		}
 
 		// Calculate offset for the current page
 		offset := (m.Page - 1) * m.PageSize
