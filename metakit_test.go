@@ -50,8 +50,7 @@ func TestPaginate(t *testing.T) {
 			t.Fatalf("failed to connect to database: %v", err)
 		}
 
-		paginate := Paginate(&test.metadata)
-		db = paginate(db)
+		_ = Paginate(&test.metadata)(db)
 
 		test.metadata.setPage()
 		test.metadata.setPageSize()
