@@ -55,9 +55,12 @@ func main() {
 		metadata.TotalRows = totalRows
 
 		// Fetch paginated and sorted results
+		// You don't need to define Limit() because 
+		// metakit.Paginate already care Limit based on PageSize
 		var results []Users
 		db.Scopes(metakit.Paginate(&metadata)).Find(&results)
 		
+		c.JSON(http.StatusOK, gin.H{"metadata": metadata})
 	})
 }
 
