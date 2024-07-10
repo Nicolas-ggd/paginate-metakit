@@ -1,5 +1,5 @@
-# Gorm-Metakit
-Gorm-Metakit is a Go package designed to simplify pagination and sorting functionalities for applications using GORM (Go Object-Relational Mapping). This package provides a Metadata structure to manage pagination and sorting parameters, and a GORM scope function to apply these settings to database queries.
+# Pagination-Metakit
+Pagination-Metakit is a Go package designed to simplify pagination and sorting functionalities for applications using GORM (Go Object-Relational Mapping) and Pure SQL. This package provides a Metadata structure to manage pagination and sorting parameters, and a GORM scope function to apply these settings to database queries, but not for only GORM, Pagination-Metakit also support pure sql pagination.
 
 ## Overview
 - Pagination: Easily handle pagination with customizable page size.
