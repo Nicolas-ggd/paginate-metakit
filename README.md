@@ -4,6 +4,7 @@ Gorm-Metakit is a Go package designed to simplify pagination and sorting functio
 ## Overview
 - Pagination: Easily handle pagination with customizable page size.
 - Default Settings: Provides sensible defaults for page, page size, and sort direction.
+- Dual Functionality: Supports both GORM and pure SQL pagination.
 
 ## Installation
 To install the package, use go get:
@@ -25,7 +26,7 @@ type Metadata struct {
     TotalPages    int64  `json:"total_pages"`
 }
 ```
-## Example Usage of Paginate function
+## Example Usage of GPaginate function
 
 ```go
 package main
@@ -41,27 +42,91 @@ import (
 func main() {
 	r.GET("/items", func(c *gin.Context) {
 		var metadata metakit.Metadata
-		
+
 		// Bind metakit Metadata struct 
-		err := c.ShoulBind(&metadata)
+		err := c.ShouldBind(&metadata)
 		if err != nil {
 			c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err})
 			return
 		}
-		
+
 		// Count total rows
 		var totalRows int64
-		db.Model(&Users{}).Count(&totalRows)
+		db.Model(&YourModel{}).Count(&totalRows)
 		metadata.TotalRows = totalRows
 
 		// Fetch paginated and sorted results
-		// You don't need to define Limit() because 
-		// metakit.Paginate already care Limit based on PageSize
-		var results []Users
-		db.Scopes(metakit.Paginate(&metadata)).Find(&results)
-		
-		c.JSON(http.StatusOK, gin.H{"metadata": metadata})
+		var results []YourModel
+		db.Scopes(metakit.GormPaginate(&metadata)).Find(&results)
+
+		c.JSON(http.StatusOK, gin.H{"metadata": metadata, "results": results})
 	})
+
+	r.Run()
+}
+
+```
+
+## Example usage of SQLPaginate function
+```go
+package main
+
+import (
+    "database/sql"
+    "log"
+    "net/http"
+    "github.com/gin-gonic/gin"
+    "github.com/Nicolas-ggd/gorm-metakit"
+    _ "github.com/lib/pq"
+)
+
+func main() {
+    db, err := sql.Open("postgres", "user=youruser dbname=yourdb sslmode=disable")
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer db.Close()
+
+    r := gin.Default()
+    
+    r.GET("/items", func(c *gin.Context) {
+        var metadata metakit.Metadata
+        
+        // Bind metakit Metadata struct
+        err := c.ShouldBind(&metadata)
+        if err != nil {
+            c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err})
+            return
+        }
+        
+        // Count total rows
+        row := db.QueryRow("SELECT COUNT(*) FROM your_table")
+        err = row.Scan(&metadata.TotalRows)
+        if err != nil {
+            c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+            return
+        }
+
+        // Fetch paginated and sorted results
+        query := "SELECT * FROM your_table"
+        rows, err := metakit.SQLPaginate(db, query, &metadata)
+        if err != nil {
+            c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+            return
+        }
+        defer rows.Close()
+
+        var results []YourModel
+        for rows.Next() {
+            var item YourModel
+            // Scan your results here
+            results = append(results, item)
+        }
+        
+        c.JSON(http.StatusOK, gin.H{"metadata": metadata, "results": results})
+    })
+
+    r.Run()
 }
 
 ```
