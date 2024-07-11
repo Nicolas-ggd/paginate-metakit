@@ -9,7 +9,7 @@ Pagination-Metakit is a Go package designed to simplify pagination and sorting f
 ## Installation
 To install the package, use go get:
 ```shell
-go get github.com/Nicolas-ggd/gorm-metakit
+go get github.com/Nicolas-ggd/paginate-metakit
 ```
 
 ## Usage
@@ -35,7 +35,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"fmt"
-	"github.com/Nicolas-ggd/gorm-metakit"
+	"github.com/Nicolas-ggd/paginate-metakit"
 	"net/http"
 )
 
@@ -76,7 +76,7 @@ import (
     "log"
     "net/http"
     "github.com/gin-gonic/gin"
-    "github.com/Nicolas-ggd/gorm-metakit"
+    "github.com/Nicolas-ggd/paginate-metakit"
     _ "github.com/lib/pq"
 )
 
