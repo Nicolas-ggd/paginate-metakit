@@ -1,6 +1,7 @@
 package metakit
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"log"
@@ -43,7 +44,7 @@ func TestSPaginate(t *testing.T) {
 		test.metadata.setPage()
 		test.metadata.setPageSize()
 		test.metadata.SortDirectionParams()
-		rows, err := SPaginate(db, "SELECT * FROM items", &test.metadata)
+		rows, err := QueryContextPaginate(context.Background(), db, 1, "SELECT * FROM items", &test.metadata)
 		if err != nil {
 			t.Fatalf("failed to execute paginated query: %v", err)
 		}

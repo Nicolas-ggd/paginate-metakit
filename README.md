@@ -109,7 +109,7 @@ func main() {
 
         // Fetch paginated and sorted results
         query := "SELECT * FROM your_table"
-        rows, err := metakit.SQLPaginate(db, query, &metadata)
+        rows, err := metakit.QueryContextPaginate(context.Background(), db, 1, query, &metadata)
         if err != nil {
             c.JSON(http.StatusInternalServerError, gin.H{"error": err})
             return
