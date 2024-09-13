@@ -1,12 +1,21 @@
 package metakit
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 )
 
-// SPaginate calculates the total pages and offset based on the current metadata and applies pagination to the SQL query
-func SPaginate(db *sql.DB, query string, m *Metadata) (*sql.Rows, error) {
+type Dialect int
+
+const (
+	MySQL Dialect = iota
+	PostgreSQL
+	SQLite
+)
+
+// QueryContextPaginate calculates the total pages and offset based on the current metadata and applies pagination to the SQL query
+func QueryContextPaginate(ctx context.Context, db *sql.DB, dialect Dialect, query string, m *Metadata, args ...any) (*sql.Rows, error) {
 	m.setPage()
 	m.setPageSize()
 
@@ -21,10 +30,22 @@ func SPaginate(db *sql.DB, query string, m *Metadata) (*sql.Rows, error) {
 	// calculate offset for the current page
 	offset := (m.Page - 1) * m.PageSize
 
+	var sortDirection string
+
 	// build the paginated query
-	paginatedQuery := fmt.Sprintf("%s ORDER BY %s %s LIMIT %d OFFSET %d", query, m.Sort, m.SortDirection, m.PageSize, offset)
-	
-	rows, err := db.Query(paginatedQuery)
+	var paginatedQuery string
+	switch dialect {
+	case PostgreSQL:
+		// Use $1, $2 for parameterized queries
+		paginatedQuery = fmt.Sprintf("%s ORDER BY %s %s LIMIT $%d OFFSET $%d", query, m.Sort, sortDirection, len(args)+1, len(args)+2)
+		args = append(args, m.PageSize, offset)
+	case MySQL, SQLite:
+		// Use ? for parameterized queries
+		paginatedQuery = fmt.Sprintf("%s ORDER BY %s %s LIMIT ? OFFSET ?", query, m.Sort, sortDirection)
+		args = append(args, m.PageSize, offset)
+	}
+
+	rows, err := db.QueryContext(ctx, paginatedQuery, args...)
 	if err != nil {
 		return nil, err
 	}
